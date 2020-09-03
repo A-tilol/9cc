@@ -12,13 +12,17 @@ assert() {
     if [ "$actual" = "$expected" ]; then
         echo "$input => $actual"
     else
-        echo "$input => $actual expected, but got $actual"
+        echo "$input => $expected expected, but got $actual"
         exit 1
     fi
 }
 
+# exit code
 assert 0 0
 assert 42 42
+
+# add, sub
+assert 21 '5+20-4'
 
 echo OK
 
