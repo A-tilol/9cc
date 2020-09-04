@@ -6,15 +6,17 @@
 #include <string.h>
 
 // token kinds
-typedef enum {
-    TK_RESERVED,    // mark
-    TK_NUM,         // integer
-    TK_EOF          // EOF
+typedef enum
+{
+    TK_RESERVED, // mark
+    TK_NUM,      // integer
+    TK_EOF       // EOF
 } TokenKind;
 
 typedef struct Token Token;
 
-struct Token {
+struct Token
+{
     TokenKind kind;
     Token *next;
     int val;
@@ -23,7 +25,8 @@ struct Token {
 
 Token *token;
 
-void error(char *fmt, ...) {
+void error(char *fmt, ...)
+{
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
@@ -31,20 +34,23 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
-bool consume(char op) {
+bool consume(char op)
+{
     if (token->kind != TK_RESERVED || token->str[0] != op)
         return false;
     token = token->next;
     return true;
 }
 
-void expect(char op) {
+void expect(char op)
+{
     if (token->kind != TK_RESERVED || token->str[0] != op)
         error("'%c'", op);
     token = token->next;
 }
 
-int expect_number() {
+int expect_number()
+{
     if (token->kind != TK_NUM)
         error("Not number.");
     int val = token->val;
@@ -52,11 +58,13 @@ int expect_number() {
     return val;
 }
 
-bool at_eof() {
+bool at_eof()
+{
     return token->kind == TK_EOF;
 }
 
-Token *new_token(TokenKind kind, Token *cur, char *str) {
+Token *new_token(TokenKind kind, Token *cur, char *str)
+{
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
     tok->str = str;
@@ -64,23 +72,28 @@ Token *new_token(TokenKind kind, Token *cur, char *str) {
     return tok;
 }
 
-Token *tokenize(char *p) {
+Token *tokenize(char *p)
+{
     Token head;
     head.next = NULL;
     Token *cur = &head;
 
-    while (*p) {
-        if (isspace(*p)) {
+    while (*p)
+    {
+        if (isspace(*p))
+        {
             p++;
             continue;
         }
 
-        if (*p == '+' || *p == '-') {
+        if (*p == '+' || *p == '-')
+        {
             cur = new_token(TK_RESERVED, cur, p++);
             continue;
         }
 
-        if (isdigit(*p)) {
+        if (isdigit(*p))
+        {
             cur = new_token(TK_NUM, cur, p);
             cur->val = strtol(p, &p, 10);
             continue;
@@ -90,12 +103,14 @@ Token *tokenize(char *p) {
     }
 
     new_token(TK_EOF, cur, p);
-    
+
     return head.next;
 }
 
-int main(int argc, char **argv) {
-    if (argc != 2) {
+int main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
         fprintf(stderr, "引数の個数が正しくありません\n");
         return 1;
     }
@@ -108,8 +123,10 @@ int main(int argc, char **argv) {
 
     printf("    mov rax, %d\n", expect_number());
 
-    while(!at_eof()) {
-        if (consume('+')) {
+    while (!at_eof())
+    {
+        if (consume('+'))
+        {
             printf("    add rax, %d\n", expect_number());
             continue;
         }
